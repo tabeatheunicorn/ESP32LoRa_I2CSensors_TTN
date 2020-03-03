@@ -1,6 +1,7 @@
 /*****************************************************
  * Written by Tabea Röthemeyer(@tabeatheunicorn) 2020 
- * 
+ * Dieses Programm sendet ein festes LoRa Packet und dient vor allem als einfaches Minimalbeispiel für 
+ * die LMIC Bibliothek.
  ****************************************************/
 #include <lmic.h>
 #include <hal/hal.h>
@@ -10,11 +11,9 @@
 #include "node_specifications.h"
 #include "lmic_functions.h"
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
 void do_send(osjob_t* j){
   Serial.println("Starting to send");
-  // Check if there is not a current TX/RX job running
-  if (LMIC.opmode & OP_TXRXPEND) {
+  if (LMIC.opmode & OP_TXRXPEND) {  // Check if there is not a current TX/RX job running
       Serial.println("OP_TXRXPEND, not sending");
   } else {
       // Prepare upstream data transmission at the next possible time.
@@ -25,23 +24,21 @@ void do_send(osjob_t* j){
   }
   // Next TX is scheduled after TX_COMPLETE event.
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   Serial.println("Starting");
-  
   // setup LoRa
   os_init();
   LMIC_reset();
-
-  // setup Sensor/Wiring
   
  }
  
 void loop() {
   // structure of main as suggested in lmic documentation 2.1.2 https://github.com/matthijskooijman/arduino-lmic/blob/master/doc/LMiC-v1.5.pdf
-   //do_send(&sendjob);
-   os_runloop_once();
+  Serial.println("Starting");
+   do_send(&sendjob);
+   Serial.println("Running");
+   os_runloop();//This function never returns. Scheduling next jobs has to be done in do_send or in on_event
 }
